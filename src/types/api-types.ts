@@ -44,6 +44,34 @@ export type AllProductsResponse = {
   success: boolean;
   // products: Product[];
 };
+
+// For fetching a list of addresses
+export interface Address {
+  _id: string; // MongoDB ObjectId
+  street: string;
+  city: string;
+  state: string;
+  zipCode: string;
+  country: string;
+  phoneNumber: string;
+  addressType: string; 
+  createdAt?: string; 
+  updatedAt?: string;
+}
+
+export interface AddressResponse {
+  success: boolean;
+  message?: string;
+  addresses: Address[];
+}
+
+// For fetching a single address
+export interface SingleAddressResponse {
+  success: boolean;
+  message?: string;
+  address: Address;
+}
+
 export type CategoriesResponse = {
   success: boolean;
   categories: string[];

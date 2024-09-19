@@ -2,7 +2,7 @@ export type User = {
   name: string;
   email: string;
   phone: string;
-  id?: string;
+  _id?: string;
   createdAt?: string;
   updatedAt?: string;
   refreshToken?: string;

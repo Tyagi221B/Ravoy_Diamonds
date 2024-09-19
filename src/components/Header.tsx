@@ -1,14 +1,20 @@
-
 import React, { useState } from "react";
 import { motion } from "framer-motion";
 import Navigation from "./Navigation";
 import images from "../assets/images";
 import AuthModal from "./AuthModel";
+import { useSelector } from "react-redux";
+import { RootState } from "../redux/store";
+import { useNavigate } from "react-router-dom";
 
 const Header: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+  const navigate = useNavigate();
 
+  const { user } = useSelector((state: RootState) => state.userReducer);
+
+  // Animation variants
   const headerVariants = {
     hidden: { opacity: 0, y: -50 },
     visible: {
@@ -22,6 +28,24 @@ const Header: React.FC = () => {
     },
   };
 
+  // Debounce function for better performance in search input
+  const handleSearchInput = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchTerm(e.target.value);
+    // Implement debouncing here if needed
+  };
+
+
+  // Function to handle user profile or login modal
+  const handleUserClick = () => {
+    if (user) {
+      // If user exists, open profile modal or navigate to profile page
+      navigate("/account"); 
+    } else {
+      // If no user, open auth modal for login/register
+      setIsAuthModalOpen(true);
+    }
+  };
+
   return (
     <>
       <motion.header
@@ -32,14 +56,18 @@ const Header: React.FC = () => {
       >
         <div className="container mx-auto px-4 py-2 flex items-center justify-between">
           <div className="flex items-center space-x-4">
+            {/* Navigation for small screens */}
             <div className="block md:hidden">
               <Navigation />
             </div>
+
+            {/* Logo */}
             <motion.div
-              className="flex items-center "
+              className="flex items-center cursor-pointer"
               initial="hidden"
               animate="visible"
               variants={headerVariants}
+              onClick={() => navigate("/")}
             >
               <img
                 src={images.Logo2}
@@ -49,6 +77,7 @@ const Header: React.FC = () => {
             </motion.div>
           </div>
 
+          {/* Search bar for larger screens */}
           <motion.div
             className="hidden relative md:block md:flex-1 md:max-w-xl md:mx-4"
             initial="hidden"
@@ -75,21 +104,23 @@ const Header: React.FC = () => {
                 placeholder="Search..."
                 className="w-full px-4 py-2 rounded-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 pl-10"
                 value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
+                onChange={handleSearchInput}
               />
             </div>
           </motion.div>
 
-          {/* Login button */}
+          {/* User and cart actions */}
           <motion.div
             className="flex items-center space-x-4"
             initial="hidden"
             animate="visible"
             variants={headerVariants}
           >
+            {/* User Authentication Button */}
             <button
               className="text-gray-600 hover:text-gray-800"
-              onClick={() => setIsAuthModalOpen(true)}
+              onClick={() => handleUserClick()}
+              aria-label="User Profile"
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -106,15 +137,20 @@ const Header: React.FC = () => {
                 />
               </svg>
             </button>
+
+            {/* User Greeting or Login/Register */}
             <h3
               className="hidden md:block text-[#9C9C9C] uppercase tracking-widest cursor-pointer"
-              onClick={() => setIsAuthModalOpen(true)}
+              onClick={() => handleUserClick()}
             >
-              Login/Register
+              {user ? user.name : "Login/Register"}
             </h3>
+
+            {/* Heart Icon (Wishlist) */}
             <button
-              onClick={() => (window.location.href = "/next-page")}
+              onClick={() => navigate("/wishlist")}
               className="text-gray-600 hover:text-gray-800"
+              aria-label="Wishlist"
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -131,7 +167,9 @@ const Header: React.FC = () => {
                 />
               </svg>
             </button>
-            <button className="text-gray-600 hover:text-gray-800">
+
+            {/* Shopping Cart */}
+            <button className="text-gray-600 hover:text-gray-800" aria-label="Shopping Cart">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 className="h-6 w-6"
@@ -150,6 +188,8 @@ const Header: React.FC = () => {
           </motion.div>
         </div>
       </motion.header>
+
+      {/* Authentication Modal */}
       <AuthModal
         isOpen={isAuthModalOpen}
         onClose={() => setIsAuthModalOpen(false)}

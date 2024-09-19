@@ -23,12 +23,14 @@ export interface VerifyOtpResponse {
   refreshToken:string;   
   status:string;
   user: User;
+  register?: boolean;
 }
 
 export const userAPI = createApi({
   reducerPath: "userApi",
   baseQuery: fetchBaseQuery({
     baseUrl: `${import.meta.env.VITE_SERVER}/api/v1/user/`,
+    credentials: "include",
   }),
   tagTypes:["users"],
   endpoints: (builder) => ({
@@ -57,16 +59,21 @@ export const userAPI = createApi({
       }),
       invalidatesTags: ["users"],
     }),
+
+    // getUser: builder.query<UserResponse, string>({
+    //   query: (phone) => `getuser/${encodeURIComponent(phone)}`,
+    //   providesTags: (result) => [{ type: "users", id: result?.user?.id }],
+    // }),
     
   }),
 })
 
 export const getUser = async (phone: string) => {
-  // eslint-disable-next-line no-useless-catch
   try { 
     const encodedPhone = encodeURIComponent(phone);
     const { data }: { data: UserResponse } = await axios.get(
-      `${import.meta.env.VITE_SERVER}/api/v1/user/getuser/${encodedPhone}`
+      `${import.meta.env.VITE_SERVER}/api/v1/user/getuser/${encodedPhone}`,
+      { withCredentials: true } // Ensure cookies are included
     );
 
     return data;
@@ -75,6 +82,7 @@ export const getUser = async (phone: string) => {
     throw error;
   }
 };
+
 
 
 export const {
