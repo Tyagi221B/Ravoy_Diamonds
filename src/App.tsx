@@ -6,10 +6,11 @@ import { useDispatch } from "react-redux";
 import { useEffect } from "react";
 import { restoreUserFromStorage } from "./redux/reducer/userReducer";
 import Account from "./components/myaccount/Account";
-import Address from "./components/myaccount/Address";
+// import Address from "./pages/AddressPage";
 import OrderSection from "./components/myaccount/OrderSection";
 import TrackOrder from "./components/myaccount/TrackOrder";
 import Wishlist from "./components/myaccount/Wishlist";
+import AddressPage from "./components/myaccount/Address";
 
 function App() {
 
@@ -26,7 +27,7 @@ function App() {
 				<Route path="/" element={<Home/>} />
 				<Route path="/rough" element={<Rough/>} />
 				<Route path="/account" element={<Account />} />
-            <Route path="/account/address" element={<Address />} />
+            <Route path="/account/address" element={<AddressPage />} />
             <Route path="/account/orderhistory" element={<OrderSection />} />
             <Route path="/account/trackorder" element={<TrackOrder />} />
             <Route path="/account/wishlist" element={<Wishlist />} /> 

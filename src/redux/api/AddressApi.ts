@@ -1,5 +1,6 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { Address, AddressResponse } from "../../types/api-types";
+import { RootState } from "../store"; 
 
 export interface CreateAddressRequest {
   userId: string;
@@ -28,6 +29,16 @@ export const addressAPI = createApi({
   baseQuery: fetchBaseQuery({
     baseUrl: `${import.meta.env.VITE_SERVER}/api/v1/address/`,
     credentials: "include",
+    prepareHeaders: (headers, { getState }) => {
+      const state = getState() as RootState;
+      const reAuthToken = state.userReducer.reAuthToken; // Adjust based on your reducer name
+
+      if (reAuthToken) {
+        headers.set("X-ReAuth-Token", reAuthToken);
+      }
+
+      return headers;
+    },
   }),
   tagTypes: ["Address", "UserAddresses"],
   endpoints: (builder) => ({
@@ -60,16 +71,18 @@ export const addressAPI = createApi({
       invalidatesTags: (result, error, { addressId }) => [{ type: "Address", id: addressId }],
     }),
 
-    deleteAddress: builder.mutation<AddressResponse, { addressId: string }>({
-      query: ({ addressId }) => ({
+    deleteAddress: builder.mutation<AddressResponse, { addressId: string; userId: string }>({
+      query: ({ addressId, userId }) => ({
         url: `addresses/${addressId}`,
         method: "DELETE",
+        body: { userId },  // Sending userId in the body
       }),
       invalidatesTags: (result, error, { addressId }) => [
         { type: "Address", id: addressId },
         { type: "UserAddresses", id: "LIST" },
       ],
     }),
+    
   }),
 });
 

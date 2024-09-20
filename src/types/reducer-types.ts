@@ -4,6 +4,8 @@ import {  User } from "./types";
 export interface UserReducerInitialState {
   user: User | null;
   loading: boolean;
+  reAuthToken: string;
+  accessToken: string;
 }
 
 // export interface CartReducerInitialState {
